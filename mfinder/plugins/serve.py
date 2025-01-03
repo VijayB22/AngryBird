@@ -25,7 +25,7 @@ from mfinder.db.settings_sql import (
 from mfinder.db.ban_sql import is_banned
 from mfinder.db.filters_sql import is_filter
 from mfinder import LOGGER
-
+from mfinder.utils.helpers import shorten_url
 
 @Client.on_message(
     ~filters.regex(r"^\/") & filters.text & filters.private & filters.incoming
@@ -106,7 +106,6 @@ async def filter_(bot, message):
                 quote=True,
             )
 
-
 @Client.on_callback_query(filters.regex(r"^(nxt_pg|prev_pg) \d+ \d+ .+$"))
 async def pages(bot, query):
     user_id = query.from_user.id
@@ -138,7 +137,6 @@ async def pages(bot, query):
             text="No results found.\nOr retry with the correct spelling 🤐",
             quote=True,
         )
-
 
 async def get_result(search, page_no, user_id, username):
     search_settings = await get_search_settings(user_id)
@@ -196,7 +194,12 @@ async def get_result(search, page_no, user_id, username):
                 index += 1
                 btn_count += 1
                 file_id = file.file_id
-                filename = f"**{index}.** [{file.file_name}](https://t.me/{username}/?start={file_id}) - `[{get_size(file.file_size)}]`"
+                long_url = f"https://t.me/{username}/?start={file_id}"
+                try:
+                    short_url = shorten_url(long_url)
+                except Exception as e:
+                    short_url = long_url  # Fallback to long URL if shortening fails
+                filename = f"**{index}.** [{file.file_name}]({short_url}) - `[{get_size(file.file_size)}]`"
                 result += "\n" + filename
             else:
                 index += 1
@@ -251,7 +254,6 @@ async def get_result(search, page_no, user_id, username):
 
     return None, None
 
-
 @Client.on_callback_query(filters.regex(r"^file (.+)$"))
 async def get_files(bot, query):
     user_id = query.from_user.id
@@ -304,7 +306,6 @@ async def get_files(bot, query):
             await disc.delete()
             await msg.delete()
             await bot.send_message(user_id, "File has been deleted")
-
 
 def get_size(size):
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
