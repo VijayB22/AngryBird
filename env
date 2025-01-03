@@ -1,0 +1,7 @@
+APP_ID = "27088123"
+API_HASH = "50dbc67d5ad1732ef82f091ad23b34c8"
+BOT_TOKEN = "6588993021:AAF0mXCR9eRaYowbpQbnz1yX2xwyIRqN3SI"
+DB_URL = "postgresql://filterbot_user:YDuHbgulq4mPIIW8EaxUrolRvn6XoUS6@dpg-ctnfrf5svqrc73b144sg-a/filterbot" #change username, password and dbname
+OWNER_ID = "1916807079"
+ADMINS = 1916807079
+DB_CHANNELS = "-1002440915864"
