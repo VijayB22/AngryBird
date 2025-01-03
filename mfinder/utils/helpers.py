@@ -3,7 +3,7 @@ import base64
 from struct import pack
 from pyrogram import raw
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
-
+import requests
 
 def get_input_file_from_file_id(
     file_id: str,
@@ -43,7 +43,6 @@ def get_input_file_from_file_id(
 
     raise ValueError(f"Unknown file id: {file_id}")
 
-
 def encode_file_id(s: bytes) -> str:
     r = b""
     n = 0
@@ -60,10 +59,8 @@ def encode_file_id(s: bytes) -> str:
 
     return base64.urlsafe_b64encode(r).decode().rstrip("=")
 
-
 def encode_file_ref(file_ref: bytes) -> str:
     return base64.urlsafe_b64encode(file_ref).decode().rstrip("=")
-
 
 def unpack_new_file_id(new_file_id):
     """Return file_id, file_ref"""
@@ -79,7 +76,6 @@ def unpack_new_file_id(new_file_id):
     )
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref
-
 
 def edit_caption(c_caption):
 
@@ -113,3 +109,20 @@ def edit_caption(c_caption):
     )
     # final_string = "**" + final_string + "**"
     return final_string
+
+def shorten_url(long_url):
+    api_url = "https://krownlinks.com/api"
+    params = {
+        'url': long_url,
+        'api': 'YOUR_API_KEY',  # Replace with your Krownlinks API key
+        'format': 'json'
+    }
+    response = requests.get(api_url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if data['status'] == 'success':
+            return data['shortenedUrl']
+        else:
+            raise Exception(f"Error shortening URL: {data['message']}")
+    else:
+        raise Exception(f"HTTP Error: {response.status_code}")
