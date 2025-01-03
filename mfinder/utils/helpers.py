@@ -3,7 +3,11 @@ import base64
 from struct import pack
 from pyrogram import raw
 from pyrogram.file_id import FileId, FileType, PHOTO_TYPES, DOCUMENT_TYPES
+import os
+from dotenv import load_dotenv
 import requests
+
+load_dotenv()
 
 def get_input_file_from_file_id(
     file_id: str,
@@ -112,9 +116,12 @@ def edit_caption(c_caption):
 
 def shorten_url(long_url):
     api_url = "https://krownlinks.com/api"
+    api_key = os.getenv("KROWN_API_KEY")
+    if not api_key:
+        raise Exception("KROWN_API_KEY is not set in .env file")
     params = {
         'url': long_url,
-        'api': 'YOUR_API_KEY',  # Replace with your Krownlinks API key
+        'api': api_key,
         'format': 'json'
     }
     response = requests.get(api_url, params=params)
